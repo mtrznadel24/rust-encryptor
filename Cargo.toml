@@ -1,0 +1,11 @@
+[package]
+name = "rust-encryptor"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.0", features = ["derive"] }
+aes-gcm = "0.10"
+rand_core = "0.6"
+argon2 = "0.5"
+zxcvbn = "2"
