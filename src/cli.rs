@@ -9,7 +9,7 @@ pub struct Cli {
 }
 
 #[derive(Subcommand)]
-pub enum Commands{
+pub enum Commands {
     /// Szyfruje podany plik
     Encrypt {
         #[command(flatten)]
@@ -25,7 +25,7 @@ pub enum Commands{
         /// Ścieżka do pliku, w którym zostanie zapisany wygenerowany klucz
         #[arg(short, long)]
         output: PathBuf,
-    }
+    },
 }
 
 #[derive(Args)]
@@ -34,10 +34,10 @@ pub enum Commands{
     .required(true)
     .args(["password", "key"])
 ))]
-pub struct EncryptorArgs{
+pub struct EncryptorArgs {
     /// Ścieżka do pliku do zaszyfrowania lub odszyfrowania
     #[arg(short, long)]
-    pub file:PathBuf,
+    pub file: PathBuf,
     /// Hasło do wygenerowania klucza szyfrowania
     #[arg(short, long)]
     pub password: Option<String>,
@@ -45,6 +45,6 @@ pub struct EncryptorArgs{
     #[arg(short, long)]
     pub key: Option<PathBuf>,
     /// Usuwa oryginalny plik po zakończeniu operacji
-    #[arg(short, long="remove-original")]
-    pub remove_original: bool
+    #[arg(short, long = "remove-original")]
+    pub remove_original: bool,
 }

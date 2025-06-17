@@ -1,12 +1,8 @@
-use zxcvbn::zxcvbn;
 use argon2::{
-    password_hash::{
-        rand_core::OsRng,
-        SaltString, Error
-    },
-    Argon2
+    Argon2,
+    password_hash::{Error, SaltString, rand_core::OsRng},
 };
-
+use zxcvbn::zxcvbn;
 
 pub fn generate_salt() -> [u8; 16] {
     let salt = SaltString::generate(&mut OsRng);
@@ -16,7 +12,7 @@ pub fn generate_salt() -> [u8; 16] {
     salt_array
 }
 
-pub fn create_key_from_password(password: &str, salt: &[u8; 16]) -> Result<Vec<u8>, Error>{
+pub fn create_key_from_password(password: &str, salt: &[u8; 16]) -> Result<Vec<u8>, Error> {
     let mut key = [0u8; 32];
     Argon2::default().hash_password_into(password.as_bytes(), salt, &mut key)?;
     Ok(key.to_vec())
@@ -26,10 +22,12 @@ pub fn is_password_safe(password: &str) -> bool {
     match zxcvbn(password, &[]) {
         Ok(estimate) => {
             if estimate.score() >= 3 {
-                println!("Hasło jest wystarczająco silne. Siła hasła: {}", estimate.score());
+                println!(
+                    "Hasło jest wystarczająco silne. Siła hasła: {}",
+                    estimate.score()
+                );
                 true
-            }
-            else {
+            } else {
                 println!("Hasło jest zbyt słabe. Siła hasła: {}", estimate.score());
                 false
             }
@@ -40,7 +38,6 @@ pub fn is_password_safe(password: &str) -> bool {
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests {

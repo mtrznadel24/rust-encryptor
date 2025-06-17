@@ -5,7 +5,10 @@ pub fn read_key_from_file(key_path: &PathBuf) -> io::Result<Vec<u8>> {
     if key.len() != 32 {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
-            format!("Niepoprawna długość klucza: oczekiwano 32 bajtów, otrzymano {}", key.len())
+            format!(
+                "Niepoprawna długość klucza: oczekiwano 32 bajtów, otrzymano {}",
+                key.len()
+            ),
         ));
     }
     Ok(key)
@@ -21,9 +24,14 @@ pub fn read_plain_file(file_path: &PathBuf) -> io::Result<Vec<u8>> {
     Ok(plaintext)
 }
 
-pub fn write_encrypted_file(file_path: &PathBuf, nonce: &[u8], ciphertext: &[u8], salt_opt: &Option<[u8;16]>) -> io::Result<()> {
+pub fn write_encrypted_file(
+    file_path: &PathBuf,
+    nonce: &[u8],
+    ciphertext: &[u8],
+    salt_opt: &Option<[u8; 16]>,
+) -> io::Result<()> {
     let mut data: Vec<u8> = Vec::new();
-    if let Some(salt) = salt_opt{
+    if let Some(salt) = salt_opt {
         data.extend_from_slice(b"PSWD");
         data.extend_from_slice(salt);
     } else {
@@ -40,25 +48,33 @@ pub fn read_encrypted_file(file_path: &PathBuf) -> io::Result<(Vec<u8>, Vec<u8>,
     let header = &data[..4];
     let (salt, offset) = match header {
         b"PSWD" => {
-            if data.len() < 4+12+16 {
-                return Err(io::Error::new(io::ErrorKind::InvalidData, "Plik zaszyfrowany hasłem za krótki, brak nonce lub soli"));
+            if data.len() < 4 + 12 + 16 {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "Plik zaszyfrowany hasłem za krótki, brak nonce lub soli",
+                ));
             }
             let salt = data[4..20].to_vec();
             (Some(salt), 20)
         }
         b"KEY0" => {
-            if data.len() < 4+12 {
-                return Err(io::Error::new(io::ErrorKind::InvalidData, "Plik zaszyfrowany kluczem za krótki, brak nonce"));
+            if data.len() < 4 + 12 {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "Plik zaszyfrowany kluczem za krótki, brak nonce",
+                ));
             }
             (None, 4)
         }
         _ => {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "Nieznany nagłówek pliku"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "Nieznany nagłówek pliku",
+            ));
         }
-            
     };
-    let nonce = data[offset..offset+12].to_vec();
-    let ciphertext = data[offset+12..].to_vec();
+    let nonce = data[offset..offset + 12].to_vec();
+    let ciphertext = data[offset + 12..].to_vec();
     Ok((nonce, ciphertext, salt))
 }
 
@@ -83,7 +99,6 @@ pub fn get_encrypted_filename(original: &PathBuf) -> PathBuf {
     }
     new_path
 }
-
 
 #[cfg(test)]
 mod tests {
